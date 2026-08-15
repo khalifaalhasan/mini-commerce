@@ -1,0 +1,9 @@
+#!/bin/sh
+# .husky/pre-commit
+
+CURRENT_DIR=$(basename "$PWD")
+
+if [ "$CURRENT_DIR" = "be" ] || [ "$CURRENT_DIR" = "fe" ]; then
+  echo "❌ FATAL ERROR: Stop using your bad muscle memory! Lakukan git commit HANYA dari ROOT FOLDER!"
+  exit 1
+fi
