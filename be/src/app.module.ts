@@ -4,6 +4,8 @@ import { AppService } from './app.service';
 import { ProductModule } from './modules/product/product.module';
 import { PrismaModule } from './modules/prisma/prisma.module';
 import { LoggerModule } from 'nestjs-pino';
+import { AuthModule } from '@thallesp/nestjs-better-auth';
+import { auth } from './modules/auth/auth';
 
 @Module({
   imports: [
@@ -17,6 +19,7 @@ import { LoggerModule } from 'nestjs-pino';
     }),
     ProductModule,
     PrismaModule,
+    AuthModule.forRoot({ auth }),
   ],
   controllers: [AppController],
   providers: [AppService],
