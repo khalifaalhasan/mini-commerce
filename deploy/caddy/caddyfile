@@ -1,8 +1,0 @@
-api.localhost {
-    reverse_proxy backend-app:3000
-}
-
-app.localhost {
-    reverse_proxy frontend-app:3000
-}
-
