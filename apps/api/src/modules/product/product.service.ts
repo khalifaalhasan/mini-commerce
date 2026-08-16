@@ -1,11 +1,10 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { CreateProductDto } from './dto/create-product.dto';
-import { PrismaService } from '../prisma/prisma.service';
-import { UpdateProductDto } from './dto/update-product.dto';
-import { LogContext } from '../../common/logging/log-context.enum';
-import { LogEvent } from '../../common/logging/log-event.enum';
-import { FindAllProductsDto } from './dto/find-all-product.dto';
-import { Prisma } from '@prisma/client';
+import { Injectable, Logger } from "@nestjs/common";
+import { CreateProductDto } from "./dto/create-product.dto";
+import { PrismaService } from "../prisma/prisma.service";
+import { UpdateProductDto } from "./dto/update-product.dto";
+import { LogContext, LogEvent } from "@mini-commerce/logger";
+import { FindAllProductsDto } from "./dto/find-all-product.dto";
+import { Prisma } from "@mini-commerce/database";
 
 @Injectable()
 export class ProductService {
@@ -85,7 +84,7 @@ export class ProductService {
   }
 
   async findAll(query: FindAllProductsDto) {
-    const { page = 1, limit = 10, search, sortOrder = 'desc' } = query;
+    const { page = 1, limit = 10, search, sortOrder = "desc" } = query;
 
     const skip = (page - 1) * limit;
     const take = limit;
@@ -94,7 +93,7 @@ export class ProductService {
       ? {
           name: {
             contains: search,
-            mode: 'insensitive',
+            mode: "insensitive",
           },
         }
       : {};
@@ -139,7 +138,7 @@ export class ProductService {
     this.logger.log(
       {
         event: LogEvent.FETCH,
-        productId: products?.id ?? 'not_found',
+        productId: products?.id ?? "not_found",
       },
       LogContext.PRODUCT,
     );
@@ -161,6 +160,6 @@ export class ProductService {
   }
 
   private generateSlug(name: string): string {
-    return name.toLowerCase().replace(/\s+/g, '-');
+    return name.toLowerCase().replace(/\s+/g, "-");
   }
 }
