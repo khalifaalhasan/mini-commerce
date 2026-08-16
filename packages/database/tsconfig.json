@@ -10,7 +10,10 @@
     "rootDir": "./src",
     "strict": false,
     "skipLibCheck": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "paths": {
+      "@mini-commerce/database": ["../../packages/database/src"]
+    }
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]
