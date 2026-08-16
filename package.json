@@ -5,8 +5,8 @@
     "dev": "turbo dev",
     "build": "turbo build",
     "lint": "turbo lint",
-    "dev:api": "turbo dev --filter=@mini-commerce/api...",
-    "dev:storefront": "turbo dev --filter=@mini-commerce/storefront...",
+    "dev:api": "turbo start:dev --filter=@mini-commerce/api",
+    "dev:storefront": "turbo start:dev --filter=@mini-commerce/storefront",
     "active:workspace": "pnpm ls -r --depth -1",
     "db:generate": "pnpm --filter @mini-commerce/database db:generate",
     "db:migrate": "pnpm --filter @mini-commerce/database db:migrate"

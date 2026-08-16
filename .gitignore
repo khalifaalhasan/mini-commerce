@@ -7,9 +7,10 @@ node_modules/
 .turbo/
 
 # === Build outputs ===
-dist/
+apps/*/dist/
+apps/*/.next/
+packages/*/dist/
 build/
-.next/
 out/
 
 # === Environment variables ===
@@ -33,12 +34,7 @@ pnpm-debug.log*
 *.db
 *.db-journal
 
-# === NestJS ===
-apps/*/dist/
 
-# === Next.js ===
-apps/*/.next/
-apps/*/out/
 .vercel
 
 # === TypeScript ===

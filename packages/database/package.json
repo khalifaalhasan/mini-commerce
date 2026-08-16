@@ -1,10 +1,13 @@
 {
   "name": "@mini-commerce/database",
   "version": "0.0.1",
-  "main": "./src/index.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "scripts": {
-    "db:generate": "prisma generate",
-    "db:migrate": "prisma migrate dev"
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsc -p tsconfig.json --watch",
+    "db:generate": "prisma generate --config prisma.config.ts",
+    "db:migrate": "prisma migrate dev --schema prisma/schema.prisma"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.9.1",
@@ -12,6 +15,7 @@
     "pg": "^8.23.0"
   },
   "devDependencies": {
-    "prisma": "^7.0.0"
+    "prisma": "^7.0.0",
+    "typescript": "^5.7.3"
   }
 }
