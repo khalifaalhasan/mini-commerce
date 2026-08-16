@@ -48,12 +48,13 @@ export class ProductController {
     return await this.productService.findBySlug(slug);
   }
 
+  @AllowAnonymous()
   @Get(`/category/:categoryId`)
   async findByCategory(@Param('categoryId') categoryId: string) {
     return await this.productService.findByCategory(categoryId);
   }
 
-  // @AllowAnonymous()
+  @AllowAnonymous()
   @Get()
   async findAll(@Query() query: FindAllProductsDto) {
     return await this.productService.findAll(query);
