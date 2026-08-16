@@ -1,0 +1,11 @@
+api.localhost {
+    reverse_proxy backend-app:3000
+}
+
+storefront.localhost {
+    reverse_proxy storefront-app:3000
+}
+
+admin.localhost {
+	reverse_proxy admin-app:3000
+}

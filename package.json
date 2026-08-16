@@ -1,0 +1,20 @@
+{
+  "name": "mini-commerce",
+  "private": true,
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "dev:api": "turbo start:dev --filter=@mini-commerce/api",
+    "dev:storefront": "turbo start:dev --filter=@mini-commerce/storefront",
+    "active:workspace": "pnpm ls -r --depth -1",
+    "db:generate": "pnpm --filter @mini-commerce/database db:generate",
+    "db:migrate": "pnpm --filter @mini-commerce/database db:migrate"
+  },
+  "devDependencies": {
+    "turbo": "^2.10.10",
+    "husky": "^9.1.7",
+    "dotenv": "^17.4.2"
+  },
+  "packageManager": "pnpm@9.0.0"
+}

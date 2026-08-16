@@ -1,0 +1,37 @@
+# Git
+.git
+.gitignore
+
+# Node modules (dipasang ulang di dalam container)
+**/node_modules
+
+# Build outputs
+apps/*/dist
+apps/*/.next
+packages/*/dist
+
+# Dev tools & config
+.turbo
+.husky
+.vscode
+.idea
+*.log
+
+# Env files
+.env
+.env.*
+!.env.example
+
+# Test files
+**/*.spec.ts
+**/*.test.ts
+**/test/
+**/coverage/
+
+# Docker files (tidak perlu rekursif)
+deploy/docker/
+
+# Docs & misc
+README.md
+*.md
+postman/
