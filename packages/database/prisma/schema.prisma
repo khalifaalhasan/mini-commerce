@@ -83,6 +83,7 @@ model Category {
   description String?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?  @db.Timestamp(3)
 
   products    Product[]
 
@@ -101,7 +102,7 @@ model Product {
   images      String[]    // Array of image URLs (PostgreSQL specific)
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
-  DeletedAt  DateTime?   @db.Timestamp(6) // Soft delete timestamp
+  DeletedAt  DateTime?   @db.Timestamp(3) // Soft delete timestamp
 
   // Restrict agar produk tidak bisa dihapus jika masih ada di tabel pesanan
   category    Category    @relation(fields: [categoryId], references: [id], onDelete: Restrict)
