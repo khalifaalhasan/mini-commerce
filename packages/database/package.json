@@ -1,0 +1,17 @@
+{
+  "name": "@mini-commerce/database",
+  "version": "0.0.1",
+  "main": "./src/index.ts",
+  "scripts": {
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev"
+  },
+  "dependencies": {
+    "@prisma/adapter-pg": "^7.9.1",
+    "@prisma/client": "^7.9.1",
+    "pg": "^8.23.0"
+  },
+  "devDependencies": {
+    "prisma": "^7.0.0"
+  }
+}
