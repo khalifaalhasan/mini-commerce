@@ -39,6 +39,211 @@
   ],
   "item": [
     {
+      "name": "Category",
+      "description": "Semua endpoint untuk manajemen kategori (`/category`).",
+      "item": [
+        {
+          "name": "Create Category",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Elektronik\",\n  \"description\": \"Kategori untuk produk-produk elektronik seperti smartphone, laptop, dan aksesoris.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/category",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "category"]
+            },
+            "description": "**[POST] /category** *(Allow Anonymous)*\n\nMembuat kategori baru.\n\n**Required fields:**\n- `name` (string) - Nama kategori\n\n**Optional fields:**\n- `description` (string) - Deskripsi kategori"
+          },
+          "response": [
+            {
+              "name": "Create Category - Success 201",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {"key": "Content-Type", "value": "application/json"}
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Elektronik\",\n  \"description\": \"Kategori untuk produk-produk elektronik.\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/category",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "category"]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [{"key": "Content-Type", "value": "application/json"}],
+              "body": "{\n  \"id\": \"cuid_example_category_id\",\n  \"name\": \"Elektronik\",\n  \"slug\": \"elektronik\",\n  \"description\": \"Kategori untuk produk-produk elektronik.\",\n  \"deletedAt\": null,\n  \"createdAt\": \"2026-08-17T05:00:00.000Z\",\n  \"updatedAt\": \"2026-08-17T05:00:00.000Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update Category",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Elektronik & Gadget\",\n  \"description\": \"Kategori untuk produk elektronik dan gadget terkini.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/category/{{categoryId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "category", "{{categoryId}}"]
+            },
+            "description": "**[PATCH] /category/:id** *(Allow Anonymous)*\n\nUpdate data kategori berdasarkan ID.\n\nSemua field bersifat **optional** (partial update):\n- `name` (string) - Nama kategori\n- `description` (string) - Deskripsi kategori\n\n**Path Param:** `id` - CUID kategori yang akan diupdate"
+          },
+          "response": [
+            {
+              "name": "Update Category - Success 200",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {"key": "Content-Type", "value": "application/json"}
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Elektronik & Gadget\",\n  \"description\": \"Kategori untuk produk elektronik dan gadget terkini.\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/category/{{categoryId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "category", "{{categoryId}}"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{"key": "Content-Type", "value": "application/json"}],
+              "body": "{\n  \"id\": \"cuid_example_category_id\",\n  \"name\": \"Elektronik & Gadget\",\n  \"slug\": \"elektronik-gadget\",\n  \"description\": \"Kategori untuk produk elektronik dan gadget terkini.\",\n  \"updatedAt\": \"2026-08-17T06:00:00.000Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get All Categories",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/category",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "category"]
+            },
+            "description": "**[GET] /category** *(Allow Anonymous)*\n\nMendapatkan semua kategori yang tersedia."
+          },
+          "response": [
+            {
+              "name": "Get All Categories - Success 200",
+              "originalRequest": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{baseUrl}}/api/category",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "category"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{"key": "Content-Type", "value": "application/json"}],
+              "body": "[\n  {\n    \"id\": \"cuid_example_category_id\",\n    \"name\": \"Elektronik\",\n    \"slug\": \"elektronik\",\n    \"description\": \"Kategori untuk produk-produk elektronik.\",\n    \"deletedAt\": null,\n    \"createdAt\": \"2026-08-17T05:00:00.000Z\",\n    \"updatedAt\": \"2026-08-17T05:00:00.000Z\"\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "Get Category by Slug",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/category/elektronik",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "category", "elektronik"]
+            },
+            "description": "**[GET] /category/:slug** *(Allow Anonymous)*\n\nMendapatkan detail kategori berdasarkan slug.\n\n**Path Param:** `slug` - Slug kategori (di-generate otomatis dari nama kategori)"
+          },
+          "response": [
+            {
+              "name": "Get by Slug - Success 200",
+              "originalRequest": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{baseUrl}}/api/category/elektronik",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "category", "elektronik"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{"key": "Content-Type", "value": "application/json"}],
+              "body": "{\n  \"id\": \"cuid_example_category_id\",\n  \"name\": \"Elektronik\",\n  \"slug\": \"elektronik\",\n  \"description\": \"Kategori untuk produk-produk elektronik.\",\n  \"deletedAt\": null,\n  \"createdAt\": \"2026-08-17T05:00:00.000Z\",\n  \"updatedAt\": \"2026-08-17T05:00:00.000Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Delete Category (Soft Delete)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/category/{{categoryId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "category", "{{categoryId}}"]
+            },
+            "description": "**[DELETE] /category/:id** *(Allow Anonymous)*\n\nSoft delete kategori berdasarkan ID.\n\nData kategori tidak dihapus permanen, hanya menandai field `deletedAt` dengan timestamp.\n\n**Path Param:** `id` - CUID kategori yang akan dihapus"
+          },
+          "response": [
+            {
+              "name": "Soft Delete - Success 200",
+              "originalRequest": {
+                "method": "DELETE",
+                "url": {
+                  "raw": "{{baseUrl}}/api/category/{{categoryId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "category", "{{categoryId}}"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{"key": "Content-Type", "value": "application/json"}],
+              "body": "{\n  \"id\": \"cuid_example_category_id\",\n  \"deletedAt\": \"2026-08-17T07:00:00.000Z\",\n  \"message\": \"Category successfully deleted\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "name": "Product",
       "description": "Semua endpoint untuk manajemen produk (`/product`).",
       "item": [
@@ -69,9 +274,9 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/product",
+              "raw": "{{baseUrl}}/api/product",
               "host": ["{{baseUrl}}"],
-              "path": ["product"]
+              "path": ["api", "product"]
             },
             "description": "**[POST] /product**\n\nMembuat produk baru. Memerlukan autentikasi.\n\n**Required fields:**\n- `name` (string) - Nama produk\n- `categoryId` (string, CUID) - ID kategori produk\n- `description` (string) - Deskripsi produk\n- `price` (number, positive) - Harga produk\n- `stock` (number, >= 0) - Stok produk\n\n**Optional fields:**\n- `sku` (string) - Stock Keeping Unit\n- `images` (string[]) - Array URL gambar produk"
           },
@@ -89,9 +294,9 @@
                   "raw": "{\n  \"name\": \"Sepatu Sneakers Premium\",\n  \"categoryId\": \"{{categoryId}}\",\n  \"description\": \"Sepatu sneakers berkualitas tinggi.\",\n  \"price\": 450000,\n  \"stock\": 100,\n  \"sku\": \"SKU-SNEAKERS-001\",\n  \"images\": [\"https://example.com/images/sneakers-1.jpg\"]\n}"
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/product",
+                  "raw": "{{baseUrl}}/api/product",
                   "host": ["{{baseUrl}}"],
-                  "path": ["product"]
+                  "path": ["api", "product"]
                 }
               },
               "status": "Created",
@@ -129,9 +334,9 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/product/{{productId}}",
+              "raw": "{{baseUrl}}/api/product/{{productId}}",
               "host": ["{{baseUrl}}"],
-              "path": ["product", "{{productId}}"]
+              "path": ["api", "product", "{{productId}}"]
             },
             "description": "**[PATCH] /product/:id**\n\nUpdate data produk berdasarkan ID. Memerlukan autentikasi.\n\nSemua field bersifat **optional** (partial update - `PartialType` dari `CreateProductDto`):\n- `name` (string)\n- `categoryId` (string, CUID)\n- `description` (string)\n- `price` (number, positive)\n- `stock` (number, >= 0)\n- `sku` (string)\n- `images` (string[])\n\n**Path Param:** `id` - CUID produk yang akan diupdate"
           },
@@ -141,9 +346,9 @@
               "originalRequest": {
                 "method": "PATCH",
                 "url": {
-                  "raw": "{{baseUrl}}/product/{{productId}}",
+                  "raw": "{{baseUrl}}/api/product/{{productId}}",
                   "host": ["{{baseUrl}}"],
-                  "path": ["product", "{{productId}}"]
+                  "path": ["api", "product", "{{productId}}"]
                 }
               },
               "status": "OK",
@@ -167,9 +372,9 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/product/{{productId}}",
+              "raw": "{{baseUrl}}/api/product/{{productId}}",
               "host": ["{{baseUrl}}"],
-              "path": ["product", "{{productId}}"]
+              "path": ["api", "product", "{{productId}}"]
             },
             "description": "**[DELETE] /product/:id**\n\nSoft delete produk berdasarkan ID. Memerlukan autentikasi.\n\nData produk tidak dihapus permanen, hanya menandai field `deletedAt` dengan timestamp.\n\n**Path Param:** `id` - CUID produk yang akan dihapus"
           },
@@ -179,9 +384,9 @@
               "originalRequest": {
                 "method": "DELETE",
                 "url": {
-                  "raw": "{{baseUrl}}/product/{{productId}}",
+                  "raw": "{{baseUrl}}/api/product/{{productId}}",
                   "host": ["{{baseUrl}}"],
-                  "path": ["product", "{{productId}}"]
+                  "path": ["api", "product", "{{productId}}"]
                 }
               },
               "status": "OK",
@@ -198,9 +403,9 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/product?page=1&limit=10&search=sneakers&sortOrder=desc",
+              "raw": "{{baseUrl}}/api/product?page=1&limit=10&search=sneakers&sortOrder=desc",
               "host": ["{{baseUrl}}"],
-              "path": ["product"],
+              "path": ["api", "product"],
               "query": [
                 {
                   "key": "page",
@@ -232,9 +437,9 @@
               "originalRequest": {
                 "method": "GET",
                 "url": {
-                  "raw": "{{baseUrl}}/product?page=1&limit=10",
+                  "raw": "{{baseUrl}}/api/product?page=1&limit=10",
                   "host": ["{{baseUrl}}"],
-                  "path": ["product"],
+                  "path": ["api", "product"],
                   "query": [
                     {"key": "page", "value": "1"},
                     {"key": "limit", "value": "10"}
@@ -255,9 +460,9 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/product/{{productSlug}}",
+              "raw": "{{baseUrl}}/api/product/{{productSlug}}",
               "host": ["{{baseUrl}}"],
-              "path": ["product", "{{productSlug}}"]
+              "path": ["api", "product", "{{productSlug}}"]
             },
             "description": "**[GET] /product/:slug** *(Allow Anonymous)*\n\nMendapatkan detail produk berdasarkan slug.\n\n**Path Param:** `slug` - Slug produk (di-generate otomatis dari nama produk)\n\n> Note: Route ini bisa konfliks dengan /product/:id pada DELETE dan PATCH jika slug menyerupai CUID."
           },
@@ -267,9 +472,9 @@
               "originalRequest": {
                 "method": "GET",
                 "url": {
-                  "raw": "{{baseUrl}}/product/sepatu-sneakers-premium",
+                  "raw": "{{baseUrl}}/api/product/sepatu-sneakers-premium",
                   "host": ["{{baseUrl}}"],
-                  "path": ["product", "sepatu-sneakers-premium"]
+                  "path": ["api", "product", "sepatu-sneakers-premium"]
                 }
               },
               "status": "OK",
@@ -286,9 +491,9 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/product/category/{{categoryId}}",
+              "raw": "{{baseUrl}}/api/product/category/{{categoryId}}",
               "host": ["{{baseUrl}}"],
-              "path": ["product", "category", "{{categoryId}}"]
+              "path": ["api", "product", "category", "{{categoryId}}"]
             },
             "description": "**[GET] /product/category/:categoryId** *(Allow Anonymous)*\n\nMendapatkan semua produk berdasarkan ID kategori.\n\n**Path Param:** `categoryId` - CUID kategori produk"
           },
@@ -298,9 +503,9 @@
               "originalRequest": {
                 "method": "GET",
                 "url": {
-                  "raw": "{{baseUrl}}/product/category/{{categoryId}}",
+                  "raw": "{{baseUrl}}/api/product/category/{{categoryId}}",
                   "host": ["{{baseUrl}}"],
-                  "path": ["product", "category", "{{categoryId}}"]
+                  "path": ["api", "product", "category", "{{categoryId}}"]
                 }
               },
               "status": "OK",
