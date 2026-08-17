@@ -15,7 +15,7 @@ export class ProductService {
 
   // Create Product
   async create(createProductDto: CreateProductDto) {
-    const product = await this.prisma.product.create({
+    const products = await this.prisma.product.create({
       data: {
         name: createProductDto.name,
         price: createProductDto.price,
@@ -30,12 +30,12 @@ export class ProductService {
     this.logger.log(
       {
         event: LogEvent.CREATE,
-        productId: product.id,
+        productId: products.id,
       },
       LogContext.PRODUCT,
     );
 
-    return product;
+    return products;
   }
 
   // Update Product
@@ -71,7 +71,7 @@ export class ProductService {
   async softDelete(id: string) {
     const products = await this.prisma.product.update({
       where: { id },
-      data: { DeletedAt: new Date() },
+      data: { deletedAt: new Date() },
     });
     this.logger.log(
       {
