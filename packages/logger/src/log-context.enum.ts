@@ -3,4 +3,5 @@ export enum LogContext {
   AUTH = "AuthService",
   PRISMA = "PrismaService",
   CATEGORY = "CategoryService",
+  USER = "UserService",
 }
