@@ -10,18 +10,21 @@ import {
 import { CategoryService } from "./category.service";
 import { CreateCategoryDto } from "./dto/create-category.dto";
 import { UpdateCategoryDto } from "./dto/update-category.dto";
-import { AllowAnonymous } from "@thallesp/nestjs-better-auth";
+import { AllowAnonymous, Roles } from "@thallesp/nestjs-better-auth";
+import { UserRole } from "../../common/enum/user-role.enum";
 
 @Controller("category")
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
   @Post()
+  @Roles([UserRole.ADMIN])
   async create(@Body() createCategoryDto: CreateCategoryDto) {
     return await this.categoryService.create(createCategoryDto);
   }
 
   @Patch("/:id")
+  @Roles([UserRole.ADMIN])
   async update(
     @Param("id") id: string,
     @Body() updateCategoryDto: UpdateCategoryDto,
@@ -42,6 +45,7 @@ export class CategoryController {
   }
 
   @Delete("/:id")
+  @Roles([UserRole.ADMIN])
   async remove(@Param("id") id: string) {
     return await this.categoryService.softDelete(id);
   }
