@@ -22,76 +22,76 @@ services:
       timeout: 5s
       retries: 5
 
-  caddy:
-    image: caddy:2-alpine
-    container_name: caddy_commerce
-    restart: unless-stopped
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./deploy/caddy/Caddyfile:/etc/caddy/Caddyfile
-      - caddy_data:/data
-      - caddy_config:/config
-    networks:
-      - proxy_network
-    depends_on:
-      - backend-app
-      - storefront-app
-      - admin-app
+  # caddy:
+  #   image: caddy:2-alpine
+  #   container_name: caddy_commerce
+  #   restart: unless-stopped
+  #   ports:
+  #     - "80:80"
+  #     - "443:443"
+  #   volumes:
+  #     - ./deploy/caddy/Caddyfile:/etc/caddy/Caddyfile
+  #     - caddy_data:/data
+  #     - caddy_config:/config
+  #   networks:
+  #     - proxy_network
+  #   depends_on:
+  #     - backend-app
+  #     - storefront-app
+  #     - admin-app
 
 
-  # Backend
-  backend-app:
-    build:
-      context: .
-      dockerfile: deploy/docker/api.Dockerfile
-    container_name: backend_commerce
-    restart: unless-stopped
-    environment:
-      NODE_ENV: production
-      PORT: 3000
-      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
-      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET}
-      BETTER_AUTH_BASE_URL: ${BETTER_AUTH_BASE_URL}
-    networks:
-      - proxy_network
-    depends_on:
-      db:
-        condition: service_healthy
+  # # Backend
+  # backend-app:
+  #   build:
+  #     context: .
+  #     dockerfile: deploy/docker/api.Dockerfile
+  #   container_name: backend_commerce
+  #   restart: unless-stopped
+  #   environment:
+  #     NODE_ENV: production
+  #     PORT: 3000
+  #     DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+  #     BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET}
+  #     BETTER_AUTH_BASE_URL: ${BETTER_AUTH_BASE_URL}
+  #   networks:
+  #     - proxy_network
+  #   depends_on:
+  #     db:
+  #       condition: service_healthy
 
-  # Frontend — Storefront
-  storefront-app:
-    build:
-      context: .
-      dockerfile: deploy/docker/storefront.Dockerfile
-    container_name: storefront_commerce
-    restart: unless-stopped
-    environment:
-      NODE_ENV: production
-      PORT: 3000
-      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-https://api.localhost}
-    networks:
-      - proxy_network
-    depends_on:
-      - backend-app
+  # # Frontend — Storefront
+  # storefront-app:
+  #   build:
+  #     context: .
+  #     dockerfile: deploy/docker/storefront.Dockerfile
+  #   container_name: storefront_commerce
+  #   restart: unless-stopped
+  #   environment:
+  #     NODE_ENV: production
+  #     PORT: 3000
+  #     NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-https://api.localhost}
+  #   networks:
+  #     - proxy_network
+  #   depends_on:
+  #     - backend-app
 
 
-  # Frontend — Admin Panel
-  admin-app:
-    build:
-      context: .
-      dockerfile: deploy/docker/admin.Dockerfile
-    container_name: admin_commerce
-    restart: unless-stopped
-    environment:
-      NODE_ENV: production
-      PORT: 3000
-      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-https://api.localhost}
-    networks:
-      - proxy_network
-    depends_on:
-      - backend-app
+  # # Frontend — Admin Panel
+  # admin-app:
+  #   build:
+  #     context: .
+  #     dockerfile: deploy/docker/admin.Dockerfile
+  #   container_name: admin_commerce
+  #   restart: unless-stopped
+  #   environment:
+  #     NODE_ENV: production
+  #     PORT: 3000
+  #     NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-https://api.localhost}
+  #   networks:
+  #     - proxy_network
+  #   depends_on:
+  #     - backend-app
 
 volumes:
   postgres_data:
