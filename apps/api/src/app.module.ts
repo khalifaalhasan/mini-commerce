@@ -7,6 +7,7 @@ import { AuthModule } from "@thallesp/nestjs-better-auth";
 import { CategoryModule } from "./modules/category/category.module";
 import { auth } from "./modules/auth/auth";
 import { logConfig } from "@mini-commerce/logger";
+import { UserModule } from "./modules/user/user.module";
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { logConfig } from "@mini-commerce/logger";
     ProductModule,
     PrismaModule,
     CategoryModule,
+    UserModule,
   ],
 })
 export class AppModule {}
