@@ -5,6 +5,11 @@ const isDev = process.env.NODE_ENV !== "production";
 export const logConfig: Params = {
   pinoHttp: {
     level: isDev ? "debug" : "info",
+    customLogLevel: (req, res, err) => {
+      if (res.statusCode >= 500 || err) return "error";
+      if (res.statusCode >= 400) return "warn";
+      return "info";
+    },
     transport: isDev
       ? {
           target: "pino-pretty",
