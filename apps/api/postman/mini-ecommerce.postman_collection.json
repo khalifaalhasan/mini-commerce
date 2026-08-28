@@ -1,0 +1,785 @@
+{
+  "info": {
+    "_postman_id": "mini-ecommerce-collection",
+    "name": "Mini E-Commerce API",
+    "description": "Postman collection lengkap untuk Mini E-Commerce Backend (NestJS + Better Auth).\n\n## Setup\n1. Set variable `baseUrl` sesuai environment (default: `http://localhost:3000`)\n2. Jalankan **Sign In** untuk mendapatkan session token\n3. Token otomatis tersimpan di variable `authToken` via test script\n\n## Auth Roles\n- **Admin Only** `🔒 ADMIN` — endpoint yang menggunakan `@Roles([UserRole.ADMIN])`\n- **Allow Anonymous** `🔓 PUBLIC` — endpoint yang menggunakan `@AllowAnonymous()`\n- **Authenticated** `🔑 AUTH` — endpoint yang memerlukan login (tanpa role spesifik)\n\n## Better Auth Endpoints\nBetter Auth meng-expose endpoint di `/api/auth/*` secara otomatis.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string",
+      "description": "Base URL server. Ubah sesuai environment (dev/staging/prod)."
+    },
+    {
+      "key": "authToken",
+      "value": "",
+      "type": "string",
+      "description": "Bearer token hasil login. Otomatis di-set oleh test script Sign In / Sign Up."
+    },
+    {
+      "key": "userId",
+      "value": "cuid_user_id_here",
+      "type": "string",
+      "description": "ID user yang digunakan pada endpoint update user."
+    },
+    {
+      "key": "productId",
+      "value": "cuid_product_id_here",
+      "type": "string",
+      "description": "ID produk (CUID) yang digunakan pada endpoint update dan delete produk."
+    },
+    {
+      "key": "categoryId",
+      "value": "cuid_category_id_here",
+      "type": "string",
+      "description": "ID kategori (CUID) untuk endpoint category dan filter produk by category."
+    },
+    {
+      "key": "productSlug",
+      "value": "nama-produk-slug",
+      "type": "string",
+      "description": "Slug produk yang digunakan pada endpoint get product by slug."
+    },
+    {
+      "key": "categorySlug",
+      "value": "nama-kategori-slug",
+      "type": "string",
+      "description": "Slug kategori yang digunakan pada endpoint get category by slug."
+    }
+  ],
+  "item": [
+    {
+      "name": "🔐 Auth (Better Auth)",
+      "description": "Endpoint autentikasi yang di-expose oleh Better Auth di `/api/auth/*`.\n\nGunakan **Sign Up** untuk membuat akun baru, lalu **Sign In** untuk mendapatkan token.\n\nToken otomatis tersimpan ke variable `authToken` via test script.",
+      "item": [
+        {
+          "name": "Sign Up (Register)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200 || pm.response.code === 201) {",
+                  "  const json = pm.response.json();",
+                  "  if (json.token) {",
+                  "    pm.collectionVariables.set('authToken', json.token);",
+                  "    console.log('✅ authToken saved:', json.token);",
+                  "  }",
+                  "  if (json.user && json.user.id) {",
+                  "    pm.collectionVariables.set('userId', json.user.id);",
+                  "    console.log('✅ userId saved:', json.user.id);",
+                  "  }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json", "type": "text"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Admin User\",\n  \"email\": \"admin@example.com\",\n  \"password\": \"admin123456\"\n}",
+              "options": {"raw": {"language": "json"}}
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/sign-up/email",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "sign-up", "email"]
+            },
+            "description": "**[POST] /api/auth/sign-up/email** 🔓 PUBLIC\n\nMendaftarkan akun baru menggunakan email dan password (Better Auth - emailAndPassword strategy).\n\nTest script otomatis menyimpan `token` ke variable `authToken` dan `userId`.\n\n**Required fields:**\n- `name` (string) - Nama user\n- `email` (string) - Email address\n- `password` (string) - Password (min 8 karakter recommended)"
+          },
+          "response": [
+            {
+              "name": "Sign Up - Success 200",
+              "originalRequest": {
+                "method": "POST",
+                "header": [{"key": "Content-Type", "value": "application/json"}],
+                "body": {"mode": "raw", "raw": "{\n  \"name\": \"Admin User\",\n  \"email\": \"admin@example.com\",\n  \"password\": \"admin123456\"\n}"},
+                "url": {"raw": "{{baseUrl}}/api/auth/sign-up/email", "host": ["{{baseUrl}}"], "path": ["api", "auth", "sign-up", "email"]}
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{"key": "Content-Type", "value": "application/json"}],
+              "body": "{\n  \"token\": \"bearer_token_string_here\",\n  \"user\": {\n    \"id\": \"cuid_user_id\",\n    \"name\": \"Admin User\",\n    \"email\": \"admin@example.com\",\n    \"emailVerified\": false,\n    \"image\": null,\n    \"createdAt\": \"2026-08-20T00:00:00.000Z\",\n    \"updatedAt\": \"2026-08-20T00:00:00.000Z\"\n  }\n}"
+            },
+            {
+              "name": "Sign Up - Email Already Exists 422",
+              "originalRequest": {
+                "method": "POST",
+                "header": [{"key": "Content-Type", "value": "application/json"}],
+                "body": {"mode": "raw", "raw": "{\n  \"name\": \"Admin User\",\n  \"email\": \"admin@example.com\",\n  \"password\": \"admin123456\"\n}"},
+                "url": {"raw": "{{baseUrl}}/api/auth/sign-up/email", "host": ["{{baseUrl}}"], "path": ["api", "auth", "sign-up", "email"]}
+              },
+              "status": "Unprocessable Entity",
+              "code": 422,
+              "_postman_previewlanguage": "json",
+              "header": [{"key": "Content-Type", "value": "application/json"}],
+              "body": "{\n  \"code\": \"USER_ALREADY_EXISTS\",\n  \"message\": \"User already exists\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Sign In",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  const json = pm.response.json();",
+                  "  if (json.token) {",
+                  "    pm.collectionVariables.set('authToken', json.token);",
+                  "    console.log('✅ authToken saved:', json.token);",
+                  "  }",
+                  "  if (json.user && json.user.id) {",
+                  "    pm.collectionVariables.set('userId', json.user.id);",
+                  "    console.log('✅ userId saved:', json.user.id);",
+                  "  }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json", "type": "text"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"admin123456\"\n}",
+              "options": {"raw": {"language": "json"}}
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/sign-in/email",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "sign-in", "email"]
+            },
+            "description": "**[POST] /api/auth/sign-in/email** 🔓 PUBLIC\n\nLogin menggunakan email dan password (Better Auth - emailAndPassword strategy).\n\nTest script otomatis menyimpan `token` ke variable `authToken` dan `userId`.\n\n**Required fields:**\n- `email` (string) - Email address\n- `password` (string) - Password"
+          },
+          "response": [
+            {
+              "name": "Sign In - Success 200",
+              "originalRequest": {
+                "method": "POST",
+                "header": [{"key": "Content-Type", "value": "application/json"}],
+                "body": {"mode": "raw", "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"admin123456\"\n}"},
+                "url": {"raw": "{{baseUrl}}/api/auth/sign-in/email", "host": ["{{baseUrl}}"], "path": ["api", "auth", "sign-in", "email"]}
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{"key": "Content-Type", "value": "application/json"}],
+              "body": "{\n  \"token\": \"bearer_token_string_here\",\n  \"user\": {\n    \"id\": \"cuid_user_id\",\n    \"name\": \"Admin User\",\n    \"email\": \"admin@example.com\",\n    \"emailVerified\": false,\n    \"image\": null,\n    \"createdAt\": \"2026-08-20T00:00:00.000Z\",\n    \"updatedAt\": \"2026-08-20T00:00:00.000Z\"\n  }\n}"
+            },
+            {
+              "name": "Sign In - Invalid Credentials 401",
+              "originalRequest": {
+                "method": "POST",
+                "header": [{"key": "Content-Type", "value": "application/json"}],
+                "body": {"mode": "raw", "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"wrongpassword\"\n}"},
+                "url": {"raw": "{{baseUrl}}/api/auth/sign-in/email", "host": ["{{baseUrl}}"], "path": ["api", "auth", "sign-in", "email"]}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [{"key": "Content-Type", "value": "application/json"}],
+              "body": "{\n  \"code\": \"INVALID_EMAIL_OR_PASSWORD\",\n  \"message\": \"Invalid email or password\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Sign Out",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{authToken}}", "type": "text", "description": "Required - Bearer token dari Sign In"}
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/sign-out",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "sign-out"]
+            },
+            "description": "**[POST] /api/auth/sign-out** 🔑 AUTH\n\nLogout dan invalidasi session token aktif.\n\n**Header:** `Authorization: Bearer <token>`"
+          },
+          "response": [
+            {
+              "name": "Sign Out - Success 200",
+              "originalRequest": {
+                "method": "POST",
+                "header": [{"key": "Authorization", "value": "Bearer {{authToken}}"}],
+                "url": {"raw": "{{baseUrl}}/api/auth/sign-out", "host": ["{{baseUrl}}"], "path": ["api", "auth", "sign-out"]}
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{"key": "Content-Type", "value": "application/json"}],
+              "body": "{\n  \"success\": true\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Session",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{authToken}}", "type": "text", "description": "Required - Bearer token dari Sign In"}
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/get-session",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "get-session"]
+            },
+            "description": "**[GET] /api/auth/get-session** 🔑 AUTH\n\nMendapatkan informasi session user yang sedang aktif.\n\n**Header:** `Authorization: Bearer <token>`"
+          },
+          "response": [
+            {
+              "name": "Get Session - Success 200",
+              "originalRequest": {
+                "method": "GET",
+                "header": [{"key": "Authorization", "value": "Bearer {{authToken}}"}],
+                "url": {"raw": "{{baseUrl}}/api/auth/get-session", "host": ["{{baseUrl}}"], "path": ["api", "auth", "get-session"]}
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{"key": "Content-Type", "value": "application/json"}],
+              "body": "{\n  \"session\": {\n    \"id\": \"session_id\",\n    \"expiresAt\": \"2026-09-20T00:00:00.000Z\",\n    \"token\": \"bearer_token_string_here\",\n    \"createdAt\": \"2026-08-20T00:00:00.000Z\",\n    \"updatedAt\": \"2026-08-20T00:00:00.000Z\",\n    \"ipAddress\": \"127.0.0.1\",\n    \"userAgent\": \"PostmanRuntime/7.x\",\n    \"userId\": \"cuid_user_id\"\n  },\n  \"user\": {\n    \"id\": \"cuid_user_id\",\n    \"name\": \"Admin User\",\n    \"email\": \"admin@example.com\",\n    \"emailVerified\": false,\n    \"image\": null,\n    \"createdAt\": \"2026-08-20T00:00:00.000Z\",\n    \"updatedAt\": \"2026-08-20T00:00:00.000Z\"\n  }\n}"
+            },
+            {
+              "name": "Get Session - Unauthorized 401",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {"raw": "{{baseUrl}}/api/auth/get-session", "host": ["{{baseUrl}}"], "path": ["api", "auth", "get-session"]}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [{"key": "Content-Type", "value": "application/json"}],
+              "body": "{\n  \"message\": \"Unauthorized\",\n  \"statusCode\": 401\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "👤 User",
+      "description": "Endpoint untuk manajemen user (`/user`).\n\n> **🔒 ADMIN** — Semua endpoint di folder ini memerlukan role `ADMIN`.",
+      "item": [
+        {
+          "name": "Update User 🔒 ADMIN",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {"key": "Content-Type", "value": "application/json", "type": "text"},
+              {"key": "Authorization", "value": "Bearer {{authToken}}", "type": "text", "description": "Required - Token admin (role: ADMIN)"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated User Name\",\n  \"image\": \"https://example.com/avatar/user.jpg\"\n}",
+              "options": {"raw": {"language": "json"}}
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/user/{{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "user", "{{userId}}"]
+            },
+            "description": "**[PATCH] /user/:id** 🔒 ADMIN\n\nUpdate data user berdasarkan ID. Hanya dapat diakses oleh role ADMIN.\n\nSemua field bersifat **optional** (partial update):\n- `name` (string, min 3 chars) - Nama user\n- `image` (string, URL) - URL foto profil user\n\n**Path Param:** `id` - CUID user yang akan diupdate\n\n**Header:** `Authorization: Bearer <admin_token>`"
+          },
+          "response": [
+            {
+              "name": "Update User - Success 200",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {"key": "Content-Type", "value": "application/json"},
+                  {"key": "Authorization", "value": "Bearer {{authToken}}"}
+                ],
+                "body": {"mode": "raw", "raw": "{\n  \"name\": \"Updated User Name\",\n  \"image\": \"https://example.com/avatar/user.jpg\"\n}"},
+                "url": {"raw": "{{baseUrl}}/api/user/{{userId}}", "host": ["{{baseUrl}}"], "path": ["api", "user", "{{userId}}"]}
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{"key": "Content-Type", "value": "application/json"}],
+              "body": "{\n  \"id\": \"cuid_user_id\",\n  \"name\": \"Updated User Name\",\n  \"email\": \"admin@example.com\",\n  \"image\": \"https://example.com/avatar/user.jpg\",\n  \"updatedAt\": \"2026-08-20T09:00:00.000Z\"\n}"
+            },
+            {
+              "name": "Update User - Forbidden 403",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {"key": "Content-Type", "value": "application/json"},
+                  {"key": "Authorization", "value": "Bearer {{authToken}}"}
+                ],
+                "body": {"mode": "raw", "raw": "{\n  \"name\": \"Updated User Name\"\n}"},
+                "url": {"raw": "{{baseUrl}}/api/user/{{userId}}", "host": ["{{baseUrl}}"], "path": ["api", "user", "{{userId}}"]}
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "_postman_previewlanguage": "json",
+              "header": [{"key": "Content-Type", "value": "application/json"}],
+              "body": "{\n  \"message\": \"Forbidden resource\",\n  \"error\": \"Forbidden\",\n  \"statusCode\": 403\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "🗂️ Category",
+      "description": "Endpoint untuk manajemen kategori produk (`/category`).\n\n- **Create, Update, Delete** → 🔒 ADMIN\n- **Get All, Get by Slug** → 🔓 PUBLIC",
+      "item": [
+        {
+          "name": "Create Category 🔒 ADMIN",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json", "type": "text"},
+              {"key": "Authorization", "value": "Bearer {{authToken}}", "type": "text", "description": "Required - Token admin (role: ADMIN)"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Elektronik\",\n  \"description\": \"Kategori untuk produk-produk elektronik seperti smartphone, laptop, dan aksesoris.\"\n}",
+              "options": {"raw": {"language": "json"}}
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/category",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "category"]
+            },
+            "description": "**[POST] /category** 🔒 ADMIN\n\nMembuat kategori baru. Hanya dapat diakses oleh role ADMIN.\n\n**Required fields:**\n- `name` (string) - Nama kategori (slug di-generate otomatis)\n\n**Optional fields:**\n- `description` (string) - Deskripsi kategori\n\n**Header:** `Authorization: Bearer <admin_token>`"
+          },
+          "response": [
+            {
+              "name": "Create Category - Success 201",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {"key": "Content-Type", "value": "application/json"},
+                  {"key": "Authorization", "value": "Bearer {{authToken}}"}
+                ],
+                "body": {"mode": "raw", "raw": "{\n  \"name\": \"Elektronik\",\n  \"description\": \"Kategori untuk produk-produk elektronik.\"\n}"},
+                "url": {"raw": "{{baseUrl}}/api/category", "host": ["{{baseUrl}}"], "path": ["api", "category"]}
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [{"key": "Content-Type", "value": "application/json"}],
+              "body": "{\n  \"id\": \"cuid_example_category_id\",\n  \"name\": \"Elektronik\",\n  \"slug\": \"elektronik\",\n  \"description\": \"Kategori untuk produk-produk elektronik.\",\n  \"deletedAt\": null,\n  \"createdAt\": \"2026-08-20T05:00:00.000Z\",\n  \"updatedAt\": \"2026-08-20T05:00:00.000Z\"\n}"
+            },
+            {
+              "name": "Create Category - Forbidden 403",
+              "originalRequest": {
+                "method": "POST",
+                "header": [{"key": "Content-Type", "value": "application/json"}],
+                "body": {"mode": "raw", "raw": "{\n  \"name\": \"Elektronik\"\n}"},
+                "url": {"raw": "{{baseUrl}}/api/category", "host": ["{{baseUrl}}"], "path": ["api", "category"]}
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "_postman_previewlanguage": "json",
+              "header": [{"key": "Content-Type", "value": "application/json"}],
+              "body": "{\n  \"message\": \"Forbidden resource\",\n  \"error\": \"Forbidden\",\n  \"statusCode\": 403\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update Category 🔒 ADMIN",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {"key": "Content-Type", "value": "application/json", "type": "text"},
+              {"key": "Authorization", "value": "Bearer {{authToken}}", "type": "text", "description": "Required - Token admin (role: ADMIN)"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Elektronik & Gadget\",\n  \"description\": \"Kategori untuk produk elektronik dan gadget terkini.\"\n}",
+              "options": {"raw": {"language": "json"}}
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/category/{{categoryId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "category", "{{categoryId}}"]
+            },
+            "description": "**[PATCH] /category/:id** 🔒 ADMIN\n\nUpdate data kategori berdasarkan ID. Hanya dapat diakses oleh role ADMIN.\n\nSemua field bersifat **optional** (partial update):\n- `name` (string) - Nama kategori\n- `description` (string) - Deskripsi kategori\n\n**Path Param:** `id` - CUID kategori yang akan diupdate\n\n**Header:** `Authorization: Bearer <admin_token>`"
+          },
+          "response": [
+            {
+              "name": "Update Category - Success 200",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {"key": "Content-Type", "value": "application/json"},
+                  {"key": "Authorization", "value": "Bearer {{authToken}}"}
+                ],
+                "body": {"mode": "raw", "raw": "{\n  \"name\": \"Elektronik & Gadget\",\n  \"description\": \"Kategori untuk produk elektronik dan gadget terkini.\"\n}"},
+                "url": {"raw": "{{baseUrl}}/api/category/{{categoryId}}", "host": ["{{baseUrl}}"], "path": ["api", "category", "{{categoryId}}"]}
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{"key": "Content-Type", "value": "application/json"}],
+              "body": "{\n  \"id\": \"cuid_example_category_id\",\n  \"name\": \"Elektronik & Gadget\",\n  \"slug\": \"elektronik-gadget\",\n  \"description\": \"Kategori untuk produk elektronik dan gadget terkini.\",\n  \"updatedAt\": \"2026-08-20T06:00:00.000Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get All Categories 🔓 PUBLIC",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/category",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "category"]
+            },
+            "description": "**[GET] /category** 🔓 PUBLIC\n\nMendapatkan semua kategori yang tersedia. Tidak memerlukan autentikasi."
+          },
+          "response": [
+            {
+              "name": "Get All Categories - Success 200",
+              "originalRequest": {
+                "method": "GET",
+                "url": {"raw": "{{baseUrl}}/api/category", "host": ["{{baseUrl}}"], "path": ["api", "category"]}
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{"key": "Content-Type", "value": "application/json"}],
+              "body": "[\n  {\n    \"id\": \"cuid_example_category_id\",\n    \"name\": \"Elektronik\",\n    \"slug\": \"elektronik\",\n    \"description\": \"Kategori untuk produk-produk elektronik.\",\n    \"deletedAt\": null,\n    \"createdAt\": \"2026-08-20T05:00:00.000Z\",\n    \"updatedAt\": \"2026-08-20T05:00:00.000Z\"\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "Get Category by Slug 🔓 PUBLIC",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/category/{{categorySlug}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "category", "{{categorySlug}}"]
+            },
+            "description": "**[GET] /category/:slug** 🔓 PUBLIC\n\nMendapatkan detail kategori berdasarkan slug. Tidak memerlukan autentikasi.\n\n**Path Param:** `slug` - Slug kategori (di-generate otomatis dari nama kategori)"
+          },
+          "response": [
+            {
+              "name": "Get by Slug - Success 200",
+              "originalRequest": {
+                "method": "GET",
+                "url": {"raw": "{{baseUrl}}/api/category/elektronik", "host": ["{{baseUrl}}"], "path": ["api", "category", "elektronik"]}
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{"key": "Content-Type", "value": "application/json"}],
+              "body": "{\n  \"id\": \"cuid_example_category_id\",\n  \"name\": \"Elektronik\",\n  \"slug\": \"elektronik\",\n  \"description\": \"Kategori untuk produk-produk elektronik.\",\n  \"deletedAt\": null,\n  \"createdAt\": \"2026-08-20T05:00:00.000Z\",\n  \"updatedAt\": \"2026-08-20T05:00:00.000Z\"\n}"
+            },
+            {
+              "name": "Get by Slug - Not Found 404",
+              "originalRequest": {
+                "method": "GET",
+                "url": {"raw": "{{baseUrl}}/api/category/slug-tidak-ada", "host": ["{{baseUrl}}"], "path": ["api", "category", "slug-tidak-ada"]}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "json",
+              "header": [{"key": "Content-Type", "value": "application/json"}],
+              "body": "{\n  \"message\": \"Category not found\",\n  \"error\": \"Not Found\",\n  \"statusCode\": 404\n}"
+            }
+          ]
+        },
+        {
+          "name": "Delete Category 🔒 ADMIN",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{authToken}}", "type": "text", "description": "Required - Token admin (role: ADMIN)"}
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/category/{{categoryId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "category", "{{categoryId}}"]
+            },
+            "description": "**[DELETE] /category/:id** 🔒 ADMIN\n\nSoft delete kategori berdasarkan ID. Hanya dapat diakses oleh role ADMIN.\n\nData tidak dihapus permanen — hanya menandai field `deletedAt` dengan timestamp.\n\n**Path Param:** `id` - CUID kategori yang akan dihapus\n\n**Header:** `Authorization: Bearer <admin_token>`"
+          },
+          "response": [
+            {
+              "name": "Delete Category - Success 200",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [{"key": "Authorization", "value": "Bearer {{authToken}}"}],
+                "url": {"raw": "{{baseUrl}}/api/category/{{categoryId}}", "host": ["{{baseUrl}}"], "path": ["api", "category", "{{categoryId}}"]}
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{"key": "Content-Type", "value": "application/json"}],
+              "body": "{\n  \"id\": \"cuid_example_category_id\",\n  \"deletedAt\": \"2026-08-20T07:00:00.000Z\",\n  \"message\": \"Category successfully deleted\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "📦 Product",
+      "description": "Endpoint untuk manajemen produk (`/product`).\n\n- **Create, Update, Delete** → 🔒 ADMIN\n- **Get All, Get by Slug, Get by Category** → 🔓 PUBLIC",
+      "item": [
+        {
+          "name": "Create Product 🔒 ADMIN",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json", "type": "text"},
+              {"key": "Authorization", "value": "Bearer {{authToken}}", "type": "text", "description": "Required - Token admin (role: ADMIN)"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Sepatu Sneakers Premium\",\n  \"categoryId\": \"{{categoryId}}\",\n  \"description\": \"Sepatu sneakers berkualitas tinggi dengan bahan kulit asli dan sol karet anti-slip. Cocok untuk aktivitas sehari-hari.\",\n  \"price\": 450000,\n  \"stock\": 100,\n  \"sku\": \"SKU-SNEAKERS-001\",\n  \"images\": [\n    \"https://example.com/images/sneakers-1.jpg\",\n    \"https://example.com/images/sneakers-2.jpg\"\n  ]\n}",
+              "options": {"raw": {"language": "json"}}
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/product",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "product"]
+            },
+            "description": "**[POST] /product** 🔒 ADMIN\n\nMembuat produk baru. Hanya dapat diakses oleh role ADMIN.\n\n**Required fields:**\n- `name` (string) - Nama produk (slug di-generate otomatis)\n- `categoryId` (string, CUID) - ID kategori produk\n- `description` (string) - Deskripsi produk\n- `price` (number, positive) - Harga produk\n- `stock` (number, >= 0) - Stok produk\n\n**Optional fields:**\n- `sku` (string) - Stock Keeping Unit\n- `images` (string[]) - Array URL gambar produk\n\n**Header:** `Authorization: Bearer <admin_token>`"
+          },
+          "response": [
+            {
+              "name": "Create Product - Success 201",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {"key": "Content-Type", "value": "application/json"},
+                  {"key": "Authorization", "value": "Bearer {{authToken}}"}
+                ],
+                "body": {"mode": "raw", "raw": "{\n  \"name\": \"Sepatu Sneakers Premium\",\n  \"categoryId\": \"{{categoryId}}\",\n  \"description\": \"Sepatu sneakers berkualitas tinggi.\",\n  \"price\": 450000,\n  \"stock\": 100,\n  \"sku\": \"SKU-SNEAKERS-001\",\n  \"images\": [\"https://example.com/images/sneakers-1.jpg\"]\n}"},
+                "url": {"raw": "{{baseUrl}}/api/product", "host": ["{{baseUrl}}"], "path": ["api", "product"]}
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [{"key": "Content-Type", "value": "application/json"}],
+              "body": "{\n  \"id\": \"cuid_example_product_id\",\n  \"name\": \"Sepatu Sneakers Premium\",\n  \"slug\": \"sepatu-sneakers-premium\",\n  \"categoryId\": \"cuid_category_id_here\",\n  \"description\": \"Sepatu sneakers berkualitas tinggi.\",\n  \"price\": 450000,\n  \"stock\": 100,\n  \"sku\": \"SKU-SNEAKERS-001\",\n  \"images\": [\"https://example.com/images/sneakers-1.jpg\"],\n  \"deletedAt\": null,\n  \"createdAt\": \"2026-08-20T03:00:00.000Z\",\n  \"updatedAt\": \"2026-08-20T03:00:00.000Z\"\n}"
+            },
+            {
+              "name": "Create Product - Forbidden 403",
+              "originalRequest": {
+                "method": "POST",
+                "header": [{"key": "Content-Type", "value": "application/json"}],
+                "body": {"mode": "raw", "raw": "{\n  \"name\": \"Sepatu Sneakers Premium\",\n  \"categoryId\": \"{{categoryId}}\",\n  \"description\": \"Deskripsi produk.\",\n  \"price\": 450000,\n  \"stock\": 100\n}"},
+                "url": {"raw": "{{baseUrl}}/api/product", "host": ["{{baseUrl}}"], "path": ["api", "product"]}
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "_postman_previewlanguage": "json",
+              "header": [{"key": "Content-Type", "value": "application/json"}],
+              "body": "{\n  \"message\": \"Forbidden resource\",\n  \"error\": \"Forbidden\",\n  \"statusCode\": 403\n}"
+            },
+            {
+              "name": "Create Product - Validation Error 400",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {"key": "Content-Type", "value": "application/json"},
+                  {"key": "Authorization", "value": "Bearer {{authToken}}"}
+                ],
+                "body": {"mode": "raw", "raw": "{\n  \"name\": \"Sepatu\"\n}"},
+                "url": {"raw": "{{baseUrl}}/api/product", "host": ["{{baseUrl}}"], "path": ["api", "product"]}
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [{"key": "Content-Type", "value": "application/json"}],
+              "body": "{\n  \"message\": [\n    \"categoryId must be a string\",\n    \"description must be a string\",\n    \"price must be a positive number\",\n    \"stock must not be less than 0\"\n  ],\n  \"error\": \"Bad Request\",\n  \"statusCode\": 400\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update Product 🔒 ADMIN",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {"key": "Content-Type", "value": "application/json", "type": "text"},
+              {"key": "Authorization", "value": "Bearer {{authToken}}", "type": "text", "description": "Required - Token admin (role: ADMIN)"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Sepatu Sneakers Premium V2\",\n  \"description\": \"Versi terbaru sepatu sneakers dengan desain lebih modern.\",\n  \"price\": 500000,\n  \"stock\": 80,\n  \"sku\": \"SKU-SNEAKERS-002\",\n  \"images\": [\n    \"https://example.com/images/sneakers-v2-1.jpg\",\n    \"https://example.com/images/sneakers-v2-2.jpg\"\n  ]\n}",
+              "options": {"raw": {"language": "json"}}
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/product/{{productId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "product", "{{productId}}"]
+            },
+            "description": "**[PATCH] /product/:id** 🔒 ADMIN\n\nUpdate data produk berdasarkan ID. Hanya dapat diakses oleh role ADMIN.\n\nSemua field bersifat **optional** (partial update via `PartialType`):\n- `name` (string)\n- `categoryId` (string, CUID)\n- `description` (string)\n- `price` (number, positive)\n- `stock` (number, >= 0)\n- `sku` (string)\n- `images` (string[])\n\n**Path Param:** `id` - CUID produk yang akan diupdate\n\n**Header:** `Authorization: Bearer <admin_token>`"
+          },
+          "response": [
+            {
+              "name": "Update Product - Success 200",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {"key": "Content-Type", "value": "application/json"},
+                  {"key": "Authorization", "value": "Bearer {{authToken}}"}
+                ],
+                "body": {"mode": "raw", "raw": "{\n  \"name\": \"Sepatu Sneakers Premium V2\",\n  \"price\": 500000,\n  \"stock\": 80\n}"},
+                "url": {"raw": "{{baseUrl}}/api/product/{{productId}}", "host": ["{{baseUrl}}"], "path": ["api", "product", "{{productId}}"]}
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{"key": "Content-Type", "value": "application/json"}],
+              "body": "{\n  \"id\": \"cuid_example_product_id\",\n  \"name\": \"Sepatu Sneakers Premium V2\",\n  \"slug\": \"sepatu-sneakers-premium-v2\",\n  \"price\": 500000,\n  \"stock\": 80,\n  \"updatedAt\": \"2026-08-20T04:00:00.000Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Delete Product 🔒 ADMIN",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{authToken}}", "type": "text", "description": "Required - Token admin (role: ADMIN)"}
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/product/{{productId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "product", "{{productId}}"]
+            },
+            "description": "**[DELETE] /product/:id** 🔒 ADMIN\n\nSoft delete produk berdasarkan ID. Hanya dapat diakses oleh role ADMIN.\n\nData tidak dihapus permanen — hanya menandai field `deletedAt` dengan timestamp.\n\n**Path Param:** `id` - CUID produk yang akan dihapus\n\n**Header:** `Authorization: Bearer <admin_token>`"
+          },
+          "response": [
+            {
+              "name": "Delete Product - Success 200",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [{"key": "Authorization", "value": "Bearer {{authToken}}"}],
+                "url": {"raw": "{{baseUrl}}/api/product/{{productId}}", "host": ["{{baseUrl}}"], "path": ["api", "product", "{{productId}}"]}
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{"key": "Content-Type", "value": "application/json"}],
+              "body": "{\n  \"id\": \"cuid_example_product_id\",\n  \"deletedAt\": \"2026-08-20T05:00:00.000Z\",\n  \"message\": \"Product successfully deleted\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get All Products 🔓 PUBLIC",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/product?page=1&limit=10&search=sneakers&sortOrder=desc",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "product"],
+              "query": [
+                {"key": "page", "value": "1", "description": "(Optional) Halaman ke berapa, default: 1, min: 1"},
+                {"key": "limit", "value": "10", "description": "(Optional) Jumlah data per halaman, default: 10, min: 1"},
+                {"key": "search", "value": "sneakers", "description": "(Optional) Kata kunci pencarian produk"},
+                {"key": "sortOrder", "value": "desc", "description": "(Optional) Urutan sort: asc atau desc, default: desc"}
+              ]
+            },
+            "description": "**[GET] /product** 🔓 PUBLIC\n\nMendapatkan semua produk dengan dukungan pagination, pencarian, dan sorting. Tidak memerlukan autentikasi.\n\n**Query Params (semua optional):**\n- `page` (integer, >= 1) - Nomor halaman, default: `1`\n- `limit` (integer, >= 1) - Jumlah item per halaman, default: `10`\n- `search` (string) - Filter berdasarkan kata kunci nama produk\n- `sortOrder` (`asc` / `desc`) - Urutan sort, default: `desc`"
+          },
+          "response": [
+            {
+              "name": "Get All Products - Success 200",
+              "originalRequest": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{baseUrl}}/api/product?page=1&limit=10",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "product"],
+                  "query": [{"key": "page", "value": "1"}, {"key": "limit", "value": "10"}]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{"key": "Content-Type", "value": "application/json"}],
+              "body": "{\n  \"data\": [\n    {\n      \"id\": \"cuid_example_product_id\",\n      \"name\": \"Sepatu Sneakers Premium\",\n      \"slug\": \"sepatu-sneakers-premium\",\n      \"price\": 450000,\n      \"stock\": 100,\n      \"createdAt\": \"2026-08-20T03:00:00.000Z\"\n    }\n  ],\n  \"meta\": {\n    \"total\": 1,\n    \"page\": 1,\n    \"limit\": 10,\n    \"totalPages\": 1\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Product by Slug 🔓 PUBLIC",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/product/{{productSlug}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "product", "{{productSlug}}"]
+            },
+            "description": "**[GET] /product/:slug** 🔓 PUBLIC\n\nMendapatkan detail produk berdasarkan slug. Tidak memerlukan autentikasi.\n\n**Path Param:** `slug` - Slug produk (di-generate otomatis dari nama produk)\n\n> Note: Route ini bisa konflik dengan /product/:id pada DELETE & PATCH jika slug menyerupai CUID."
+          },
+          "response": [
+            {
+              "name": "Get by Slug - Success 200",
+              "originalRequest": {
+                "method": "GET",
+                "url": {"raw": "{{baseUrl}}/api/product/sepatu-sneakers-premium", "host": ["{{baseUrl}}"], "path": ["api", "product", "sepatu-sneakers-premium"]}
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{"key": "Content-Type", "value": "application/json"}],
+              "body": "{\n  \"id\": \"cuid_example_product_id\",\n  \"name\": \"Sepatu Sneakers Premium\",\n  \"slug\": \"sepatu-sneakers-premium\",\n  \"categoryId\": \"cuid_category_id_here\",\n  \"description\": \"Sepatu sneakers berkualitas tinggi.\",\n  \"price\": 450000,\n  \"stock\": 100,\n  \"sku\": \"SKU-SNEAKERS-001\",\n  \"images\": [\"https://example.com/images/sneakers-1.jpg\"],\n  \"deletedAt\": null,\n  \"createdAt\": \"2026-08-20T03:00:00.000Z\",\n  \"updatedAt\": \"2026-08-20T03:00:00.000Z\"\n}"
+            },
+            {
+              "name": "Get by Slug - Not Found 404",
+              "originalRequest": {
+                "method": "GET",
+                "url": {"raw": "{{baseUrl}}/api/product/slug-tidak-ada", "host": ["{{baseUrl}}"], "path": ["api", "product", "slug-tidak-ada"]}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "json",
+              "header": [{"key": "Content-Type", "value": "application/json"}],
+              "body": "{\n  \"message\": \"Product not found\",\n  \"error\": \"Not Found\",\n  \"statusCode\": 404\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Products by Category 🔓 PUBLIC",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/product/category/{{categoryId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "product", "category", "{{categoryId}}"]
+            },
+            "description": "**[GET] /product/category/:categoryId** 🔓 PUBLIC\n\nMendapatkan semua produk berdasarkan ID kategori. Tidak memerlukan autentikasi.\n\n**Path Param:** `categoryId` - CUID kategori produk"
+          },
+          "response": [
+            {
+              "name": "Get by Category - Success 200",
+              "originalRequest": {
+                "method": "GET",
+                "url": {"raw": "{{baseUrl}}/api/product/category/{{categoryId}}", "host": ["{{baseUrl}}"], "path": ["api", "product", "category", "{{categoryId}}"]}
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{"key": "Content-Type", "value": "application/json"}],
+              "body": "[\n  {\n    \"id\": \"cuid_example_product_id\",\n    \"name\": \"Sepatu Sneakers Premium\",\n    \"slug\": \"sepatu-sneakers-premium\",\n    \"price\": 450000,\n    \"stock\": 100,\n    \"categoryId\": \"cuid_category_id_here\"\n  }\n]"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

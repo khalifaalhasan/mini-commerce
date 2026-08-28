@@ -18,6 +18,11 @@ model User {
   email         String    @unique
   emailVerified Boolean   @default(false)
   image         String?
+  role          Role      @default(CUSTOMER)
+  // Better Auth admin plugin fields
+  banned        Boolean?  @default(false)
+  banReason     String?
+  banExpires    DateTime?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
@@ -29,15 +34,17 @@ model User {
 }
 
 model Session {
-  id        String   @id @default(cuid())
-  expiresAt DateTime
-  token     String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  ipAddress String?
-  userAgent String?
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id               String   @id @default(cuid())
+  expiresAt        DateTime
+  token            String   @unique
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  ipAddress        String?
+  userAgent        String?
+  userId           String
+  // Better Auth admin plugin field
+  impersonatedBy   String?
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("sessions")
 }
@@ -150,4 +157,9 @@ enum OrderStatus {
   SHIPPED
   DELIVERED
   CANCELLED
+}
+
+enum Role {
+  CUSTOMER
+  ADMIN
 }
