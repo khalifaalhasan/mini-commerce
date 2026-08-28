@@ -16,17 +16,17 @@ import { FindAllProductsDto } from "./dto/find-all-product.dto";
 import { AllowAnonymous, Roles } from "@thallesp/nestjs-better-auth";
 import type { UserSession } from "@thallesp/nestjs-better-auth";
 import { UserRole } from "../../common/enum/user-role.enum";
-import { ApiOperation, ApiTags } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 
 @ApiTags('Product')
 @Controller("product")
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
-  // sementara buat testing
   @Post()
   @ApiOperation({ summary: 'Create a new product (ADMIN)' })
   @Roles([UserRole.ADMIN])
+  @ApiBearerAuth()
   async create(@Body() createProductDto: CreateProductDto) {
     return await this.productService.create(createProductDto);
   }
@@ -35,6 +35,7 @@ export class ProductController {
   @Patch(`/:id`)
   @ApiOperation({ summary: 'Update product (ADMIN)' })
   @Roles([UserRole.ADMIN])
+  @ApiBearerAuth()
   async update(
     @Body() updateProductDto: UpdateProductDto,
     @Param("id") id: string,
@@ -46,6 +47,7 @@ export class ProductController {
   @Delete(`/:id`)
   @ApiOperation({ summary: 'Soft delete product (ADMIN)' })
   @Roles([UserRole.ADMIN])
+  @ApiBearerAuth()
   async softDelete(@Param("id") id: string) {
     return await this.productService.softDelete(id);
   }
