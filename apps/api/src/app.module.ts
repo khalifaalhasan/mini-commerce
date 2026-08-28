@@ -9,6 +9,7 @@ import { FilteredLogger, logConfig } from "@mini-commerce/logger";
 import { UserModule } from "./modules/user/user.module";
 import { auth } from "./modules/auth/auth.config";
 import { AuthModule } from "@thallesp/nestjs-better-auth";
+import { RouterModule } from '@nestjs/core';
 
 @Module({
   providers: [
@@ -21,6 +22,12 @@ import { AuthModule } from "@thallesp/nestjs-better-auth";
   imports: [
     LoggerModule.forRoot(logConfig),
     AuthModule.forRoot(auth),
+    RouterModule.register([
+      {
+        path: 'auth',
+        module: AuthModule,
+      }
+    ]),
     ProductModule,
     PrismaModule,
     CategoryModule,

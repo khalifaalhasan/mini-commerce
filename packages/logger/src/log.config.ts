@@ -20,16 +20,16 @@ export const logConfig: Params = {
             ignore: "pid,hostname",
             messageKey: "msg",
             levelFirst: true,
+            
           },
         }
+        
       : undefined,
     serializers: {
       req: (req) => ({ method: req.method, url: req.url }),
       res: (res) => ({ statusCode: res.statusCode }),
     },
     customProps: () => ({ context: "HTTP" }),
-    autoLogging: {
-      ignore: (req) => req.url === "/api/health",
-    },
+    autoLogging: false
   },
 };

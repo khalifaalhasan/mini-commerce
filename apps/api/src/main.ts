@@ -2,13 +2,13 @@ import 'dotenv/config';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common/pipes/validation.pipe';
-import { Logger, LoggerErrorInterceptor } from 'nestjs-pino';
+import { LoggerErrorInterceptor } from 'nestjs-pino';
 import { PrismaExceptionFilter } from './common/filter/prisma-exception.filter';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { apiReference } from '@scalar/nestjs-api-reference';
-import { FilteredLogger } from '@mini-commerce/logger';
-import { getBetterAuthSchema } from './modules/auth/auth.config';
+import { FilteredLogger, logConfig } from '@mini-commerce/logger';
 import { mergeAuthDocs } from './modules/auth/auth-docs.util';
+import { pinoHttp } from 'pino-http';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -16,6 +16,11 @@ async function bootstrap() {
     bufferLogs: true,
     bodyParser: false,
   });
+
+  app.use(pinoHttp({
+    ...logConfig.pinoHttp,
+    autoLogging: true, 
+  }));
 
   // app.enableCors({
   //   origin: '*', 
