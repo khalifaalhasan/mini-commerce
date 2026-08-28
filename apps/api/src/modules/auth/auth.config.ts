@@ -5,12 +5,14 @@ import { prisma } from "@mini-commerce/database";
 
 
 export const auth = betterAuth({
+  baseURL: process.env.BETTER_AUTH_BASE_URL || "http://localhost:3000/api/auth",
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
   emailAndPassword: {
     enabled: true,
   },
+  hooks: {}, 
   plugins: [
     openAPI(),
     admin({
